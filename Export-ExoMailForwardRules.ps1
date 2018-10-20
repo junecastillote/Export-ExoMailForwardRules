@@ -27,11 +27,29 @@
 #>
 $scriptVersion = "1.0"
 
+#get root path of the script
+$script_root = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+$WarningPreference = "SilentlyContinue"
+
+#create folders if they don'e exist
+if ((Test-Path "$($script_root)\Reports") -eq $false)
+{
+    New-Item -ItemType Directory "$($script_root)\Reports" | out-null
+}
+
+if ((Test-Path "$($script_root)\Logs") -eq $false)
+{
+    New-Item -ItemType Directory "$($script_root)\Logs" | out-null
+}
+
 #kill transcript if still running
 try{
     stop-transcript|out-null
   }
   catch [System.InvalidOperationException]{}
+
+#start transcribing
+Start-Transcript -Path "$($script_root)\Logs\ScriptRun_$((get-date).tostring("yyyy_MM_dd")).txt"
 
 Function New-EXOSession()
 {
@@ -45,10 +63,7 @@ Function New-EXOSession()
     $office365 = Import-PSSession $EXOSession -DisableNameChecking -AllowClobber
 }
 
-#get root path of the script
-$script_root = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
-Start-Transcript -Path "$($script_root)\Logs\ScriptRun_$((get-date).tostring("yyyy_MM_dd")).txt" -Append
-$WarningPreference = "SilentlyContinue"
+
 
 #<O365 CREDENTIALS
 #Note: This uses an encrypted credential (XML). To store the credential:
@@ -60,9 +75,9 @@ $onLineCredential = Import-Clixml "$($script_root)\Office365StoredCredential.xml
 
 #<mail variables
 $sendEmail = $true
-$sender = "dxc.o365.svc@downergroup.com"
-$recipients = "tito.castillote-jr@dxc.com","june.castillote@gmail.com"
-$subject = "[Downer] Office 365 Mailbox Forwarding Rule Report"
+$sender = "healthmonitor@lazyexchangeadmin.com"
+$recipients = "june.castillote@lazyexchangeadmin.com","june.castillote@gmail.com"
+$subject = "Office 365 Mailbox Forwarding Rule Report"
 $smtpServer = "smtp.office365.com"
 $smtpPort = "587"
 #mail variables>
@@ -84,9 +99,9 @@ $mailboxes = get-mailbox -RecipientTypeDetails UserMailbox -ResultSize 50 | Sort
 $mailboxes | Export-Csv -NoTypeInformation "$($script_root)\Reports\mailboxes.csv"
 $totalMailbox = $mailboxes.Count
 
-#paging variables
-$offSet=0
+#paging variable
 $pageSize=100
+$offSet=0
 
 $i=1
 $totalRules=0
