@@ -31,7 +31,7 @@ $scriptVersion = "1.0"
 $script_root = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 $WarningPreference = "SilentlyContinue"
 
-#create folders if they don'e exist
+#create folders if they don't exist
 if ((Test-Path "$($script_root)\Reports") -eq $false)
 {
     New-Item -ItemType Directory "$($script_root)\Reports" | out-null
@@ -95,7 +95,7 @@ if (Test-Path $outputFile)
 
 #retrieve all mailbox list
 Write-Host "Retrieving Mailbox List" -ForegroundColor Green
-$mailboxes = get-mailbox -RecipientTypeDetails UserMailbox -ResultSize 50 | Sort-Object UserPrincipalName | Select-Object UserPrincipalName,PrimarySMTPAddress,SamAccountName,DisplayName
+$mailboxes = get-mailbox -RecipientTypeDetails UserMailbox -ResultSize Unlimited | Sort-Object UserPrincipalName | Select-Object UserPrincipalName,PrimarySMTPAddress,SamAccountName,DisplayName
 $mailboxes | Export-Csv -NoTypeInformation "$($script_root)\Reports\mailboxes.csv"
 $totalMailbox = $mailboxes.Count
 
