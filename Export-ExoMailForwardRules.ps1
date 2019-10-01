@@ -25,7 +25,7 @@
 		.\Export-ExoMailForwardRules.ps1
 
 #>
-$scriptVersion = "1.0"
+$scriptVersion = "1.1"
 
 #get root path of the script
 $script_root = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
@@ -113,7 +113,7 @@ do {
 
         Write-host "$($i) of $($totalMailbox) | $($mailbox.UserPrincipalname) | " -ForegroundColor Yellow -NoNewline
         $i++
-        $rules = Get-InboxRule -Mailbox $mailbox.UserPrincipalname | Select-Object Name, Description, Enabled, Priority, ForwardTo, ForwardAsAttachmentTo, RedirectTo, DeleteMessage | Where-Object {($_.ForwardTo -ne $null) -or ($_.ForwardAsAttachmentTo -ne $null) -or ($_.RedirectsTo -ne $null)}
+        $rules = Get-InboxRule -Mailbox $mailbox.UserPrincipalname | Select-Object Name, Description, Enabled, Priority, ForwardTo, ForwardAsAttachmentTo, RedirectTo, DeleteMessage | Where-Object {($_.ForwardTo -ne $null) -or ($_.ForwardAsAttachmentTo -ne $null) -or ($_.RedirectTo -ne $null)}
         $ruleCount = $rules | Measure-Object
         $totalRules=$totalRules+$ruleCount.count
         if ($rules){
